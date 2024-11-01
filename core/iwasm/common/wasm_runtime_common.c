@@ -2977,6 +2977,16 @@ wasm_set_exception_local(WASMModuleInstance *module_inst, const char *exception)
 }
 
 void
+wasm_set_exception_f(WASMModuleInstance *module_inst, const char *format, ...) {
+    char buf[EXCEPTION_BUF_LEN];
+    va_list args;
+    va_start(args, format);
+    vsnprintf(buf, EXCEPTION_BUF_LEN, format, args);
+    wasm_set_exception(module_inst, buf);
+    va_end(args);
+}
+
+void
 wasm_set_exception(WASMModuleInstance *module_inst, const char *exception)
 {
 #if WASM_ENABLE_THREAD_MGR != 0

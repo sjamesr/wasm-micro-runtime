@@ -2403,13 +2403,15 @@ wasm_interp_call_func_bytecode(WASMModuleInstance *module,
 #if WASM_ENABLE_GC == 0
                 fidx = tbl_inst->elems[val];
                 if (fidx == (uint32)-1) {
-                    wasm_set_exception(module, "uninitialized element");
+                    wasm_set_exception_f(module,
+                                         "uninitialized element %d", val);
                     goto got_exception;
                 }
 #else
                 func_obj = (WASMFuncObjectRef)tbl_inst->elems[val];
                 if (!func_obj) {
-                    wasm_set_exception(module, "uninitialized element");
+                    wasm_set_exception_f(module,
+                                         "uninitialized element %d", val);
                     goto got_exception;
                 }
                 fidx = wasm_func_obj_get_func_idx_bound(func_obj);

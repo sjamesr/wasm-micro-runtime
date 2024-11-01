@@ -3960,8 +3960,9 @@ call_indirect(WASMExecEnv *exec_env, uint32 tbl_idx, uint32 tbl_elem_idx,
 
     tbl_elem_val = ((table_elem_type_t *)table_inst->elems)[tbl_elem_idx];
     if (tbl_elem_val == NULL_REF) {
-        wasm_set_exception(module_inst, "uninitialized element");
-        goto got_exception;
+        wasm_set_exception_f(module_inst, "uninitialized element %d",
+                             tbl_elem_idx);
+      goto got_exception;
     }
 
 #if WASM_ENABLE_GC == 0
