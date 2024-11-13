@@ -1894,8 +1894,10 @@ check_linked_symbol(WASMModuleInstance *module_inst, char *error_buf,
             && !func->import_func_linked
 #endif
         ) {
-            LOG_WARNING("warning: failed to link import function (%s, %s)",
-                        func->module_name, func->field_name);
+          set_error_buf_v(error_buf, error_buf_size,
+                          "warning: failed to link import function (%s, %s)",
+                          func->module_name, func->field_name);
+          return false;
         }
     }
 
