@@ -39,6 +39,70 @@ extern "C" {
         memcpy((addr), &val, sizeof(void *)); \
     } while (0)
 
+inline int16
+load_i16(void *addr)
+{
+    int16 res;
+    memcpy(&res, addr, sizeof(int16));
+    return res;
+}
+
+inline int32
+load_i32(void *addr)
+{
+    int32 res;
+    memcpy(&res, addr, sizeof(int32));
+    return res;
+}
+
+inline int64
+load_i64(void *addr)
+{
+    int64 res;
+    memcpy(&res, addr, sizeof(int64));
+    return res;
+}
+
+inline uint16
+load_u16(void *addr)
+{
+    uint16 res;
+    memcpy(&res, addr, sizeof(uint16));
+    return res;
+}
+
+inline uint32
+load_u32(void *addr)
+{
+    uint32 res;
+    memcpy(&res, addr, sizeof(uint32));
+    return res;
+}
+
+inline float32
+load_f32(void *addr)
+{
+    float32 res;
+    memcpy(&res, addr, sizeof(float32));
+    return res;
+}
+
+inline float64
+load_f64(void *addr)
+{
+    float64 res;
+    memcpy(&res, addr, sizeof(float64));
+    return res;
+}
+
+inline V128
+load_v128(void *addr)
+{
+    V128 res;
+    memcpy(&res, addr, sizeof(V128));
+    return res;
+}
+
 #if WASM_CPU_SUPPORTS_UNALIGNED_ADDR_ACCESS != 0
 
 #define PUT_I64_TO_ADDR(addr, value)       \
@@ -88,13 +152,6 @@ STORE_V128(void *addr, V128 value)
 }
 
 /* For LOAD opcodes */
-#define LOAD_I64(addr) (*(int64 *)(addr))
-#define LOAD_F64(addr) (*(float64 *)(addr))
-#define LOAD_I32(addr) (*(int32 *)(addr))
-#define LOAD_U32(addr) (*(uint32 *)(addr))
-#define LOAD_I16(addr) (*(int16 *)(addr))
-#define LOAD_U16(addr) (*(uint16 *)(addr))
-#define LOAD_V128(addr) (*(V128 *)(addr))
 
 #else /* WASM_CPU_SUPPORTS_UNALIGNED_ADDR_ACCESS != 0 */
 
@@ -321,152 +378,6 @@ STORE_V128(void *addr, V128 value)
 }
 
 /* For LOAD opcodes */
-static inline V128
-LOAD_V128(void *addr)
-{
-    uintptr_t addr1 = (uintptr_t)addr;
-    union {
-        V128 val;
-        uint64 u64[2];
-        uint32 u32[4];
-        uint16 u16[8];
-        uint8 u8[16];
-    } u;
-    if ((addr1 & (uintptr_t)15) == 0)
-        return *(V128 *)addr;
-
-    if ((addr1 & (uintptr_t)7) == 0) {
-        u.u64[0] = ((uint64 *)addr)[0];
-        u.u64[1] = ((uint64 *)addr)[1];
-    }
-    else if ((addr1 & (uintptr_t)3) == 0) {
-        u.u32[0] = ((uint32 *)addr)[0];
-        u.u32[1] = ((uint32 *)addr)[1];
-        u.u32[2] = ((uint32 *)addr)[2];
-        u.u32[3] = ((uint32 *)addr)[3];
-    }
-    else if ((addr1 & (uintptr_t)1) == 0) {
-        u.u16[0] = ((uint16 *)addr)[0];
-        u.u16[1] = ((uint16 *)addr)[1];
-        u.u16[2] = ((uint16 *)addr)[2];
-        u.u16[3] = ((uint16 *)addr)[3];
-        u.u16[4] = ((uint16 *)addr)[4];
-        u.u16[5] = ((uint16 *)addr)[5];
-        u.u16[6] = ((uint16 *)addr)[6];
-        u.u16[7] = ((uint16 *)addr)[7];
-    }
-    else {
-        for (int i = 0; i < 16; i++)
-            u.u8[i] = ((uint8 *)addr)[i];
-    }
-    return u.val;
-}
-
-static inline int64
-LOAD_I64(void *addr)
-{
-    uintptr_t addr1 = (uintptr_t)addr;
-    union {
-        int64 val;
-        uint32 u32[2];
-        uint16 u16[4];
-        uint8 u8[8];
-    } u;
-    if ((addr1 & (uintptr_t)7) == 0)
-        return *(int64 *)addr;
-
-    if ((addr1 & (uintptr_t)3) == 0) {
-        u.u32[0] = ((uint32 *)addr)[0];
-        u.u32[1] = ((uint32 *)addr)[1];
-    }
-    else if ((addr1 & (uintptr_t)1) == 0) {
-        u.u16[0] = ((uint16 *)addr)[0];
-        u.u16[1] = ((uint16 *)addr)[1];
-        u.u16[2] = ((uint16 *)addr)[2];
-        u.u16[3] = ((uint16 *)addr)[3];
-    }
-    else {
-        int32 t;
-        for (t = 0; t < 8; t++)
-            u.u8[t] = ((uint8 *)addr)[t];
-    }
-    return u.val;
-}
-
-static inline float64
-LOAD_F64(void *addr)
-{
-    uintptr_t addr1 = (uintptr_t)addr;
-    union {
-        float64 val;
-        uint32 u32[2];
-        uint16 u16[4];
-        uint8 u8[8];
-    } u;
-    if ((addr1 & (uintptr_t)7) == 0)
-        return *(float64 *)addr;
-
-    if ((addr1 & (uintptr_t)3) == 0) {
-        u.u32[0] = ((uint32 *)addr)[0];
-        u.u32[1] = ((uint32 *)addr)[1];
-    }
-    else if ((addr1 & (uintptr_t)1) == 0) {
-        u.u16[0] = ((uint16 *)addr)[0];
-        u.u16[1] = ((uint16 *)addr)[1];
-        u.u16[2] = ((uint16 *)addr)[2];
-        u.u16[3] = ((uint16 *)addr)[3];
-    }
-    else {
-        int32 t;
-        for (t = 0; t < 8; t++)
-            u.u8[t] = ((uint8 *)addr)[t];
-    }
-    return u.val;
-}
-
-static inline int32
-LOAD_I32(void *addr)
-{
-    uintptr_t addr1 = (uintptr_t)addr;
-    union {
-        int32 val;
-        uint16 u16[2];
-        uint8 u8[4];
-    } u;
-    if ((addr1 & (uintptr_t)3) == 0)
-        return *(int32 *)addr;
-
-    if ((addr1 & (uintptr_t)1) == 0) {
-        u.u16[0] = ((uint16 *)addr)[0];
-        u.u16[1] = ((uint16 *)addr)[1];
-    }
-    else {
-        u.u8[0] = ((uint8 *)addr)[0];
-        u.u8[1] = ((uint8 *)addr)[1];
-        u.u8[2] = ((uint8 *)addr)[2];
-        u.u8[3] = ((uint8 *)addr)[3];
-    }
-    return u.val;
-}
-
-static inline int16
-LOAD_I16(void *addr)
-{
-    uintptr_t addr1 = (uintptr_t)addr;
-    union {
-        int16 val;
-        uint8 u8[2];
-    } u;
-    if ((addr1 & (uintptr_t)1)) {
-        u.u8[0] = ((uint8 *)addr)[0];
-        u.u8[1] = ((uint8 *)addr)[1];
-        return u.val;
-    }
-    return *(int16 *)addr;
-}
-
-#define LOAD_U32(addr) ((uint32)LOAD_I32(addr))
-#define LOAD_U16(addr) ((uint16)LOAD_I16(addr))
 
 #endif /* WASM_CPU_SUPPORTS_UNALIGNED_ADDR_ACCESS != 0 */
 

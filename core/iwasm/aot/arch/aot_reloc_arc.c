@@ -312,7 +312,7 @@ apply_relocation(AOTModule *module, uint8 *target_section_addr,
     switch (reloc_type) {
         case R_ARC_S21H_PCREL:
         {
-            uint32 insn = LOAD_I32(target_section_addr + reloc_offset);
+            uint32 insn = load_i32(target_section_addr + reloc_offset);
             int32 addend, value;
             uintptr_t S, P;
             intptr_t A;
@@ -349,7 +349,7 @@ apply_relocation(AOTModule *module, uint8 *target_section_addr,
         }
         case R_ARC_S21W_PCREL:
         {
-            uint32 insn = LOAD_I32(target_section_addr + reloc_offset);
+            uint32 insn = load_i32(target_section_addr + reloc_offset);
             int32 addend, value;
             uintptr_t S, P;
             intptr_t A;
@@ -386,7 +386,7 @@ apply_relocation(AOTModule *module, uint8 *target_section_addr,
         }
         case R_ARC_S25H_PCREL:
         {
-            uint32 insn = LOAD_I32(target_section_addr + reloc_offset);
+            uint32 insn = load_i32(target_section_addr + reloc_offset);
             int32 addend, value;
             uintptr_t S, P;
             intptr_t A;
@@ -425,7 +425,7 @@ apply_relocation(AOTModule *module, uint8 *target_section_addr,
         }
         case R_ARC_S25W_PCREL:
         {
-            uint32 insn = LOAD_I32(target_section_addr + reloc_offset);
+            uint32 insn = load_i32(target_section_addr + reloc_offset);
             int32 addend, value;
             uintptr_t S, P;
             intptr_t A;
